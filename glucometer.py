@@ -119,7 +119,8 @@ def main():
         outputfile = open(outputfilename,"w")
         outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
         for reading in readings:
-          outputfile.write(line)
+          outputfile.write(reading.as_csv(unit))
+          outputfile.write("\n")
         outputfile.close()
       else:
         for reading in readings:
