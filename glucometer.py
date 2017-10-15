@@ -57,6 +57,9 @@ def main():
   parser_dump.add_argument(
     '--with-ketone', action='store_true', default=False,
     help='Enable ketone reading if available on the glucometer.')
+  parser_dump.add_argument(
+    '--to-file', action='store_true', default=False,
+    help='Output results to a file yyyymmddhhmmss.csv')
 
   parser_date = subparsers.add_parser(
     'datetime', help='Reads or sets the date and time of the glucometer.')
@@ -110,8 +113,16 @@ def main():
         readings = sorted(
           readings, key=lambda reading: getattr(reading, args.sort_by))
 
-      for reading in readings:
-        print(reading.as_csv(unit))
+      if args.to_filename:
+        outputfilename='./{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
+        outputfile = open(outputfilename,"w")
+        outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
+        for reading in readings:
+          outputfile.write(line)
+        outputfile.close()
+      else:
+        for reading in readings:
+          print(reading.as_csv(unit))
     elif args.action == 'datetime':
       if args.set == 'now':
         print(device.set_datetime())
