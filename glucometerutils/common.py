@@ -94,7 +94,7 @@ class GlucoseReading(_ReadingBase):
     """Returns the reading as a formatted comma-separated value string."""
     return '"%s","%.2f","%s","%s","%s","%.2f"' % (
       self.timestamp, self.get_value_as(unit), self.meal, self.measure_method,
-      self.comment, round(self.get_value_as(unit)))
+      self.comment, round(self.get_value_as(unit),1))
 
 class KetoneReading(_ReadingBase):
   def __new__(cls, timestamp, value, comment='', **kwargs):
