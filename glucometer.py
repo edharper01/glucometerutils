@@ -62,7 +62,7 @@ def main():
     '--to-file', action='store_true', default=False,
     help='Output results to a file yyyymmddhhmmss.csv')
   parser_dump.add_argument(
-    '--output-folder', action='store', default='', required=False,
+    '--output-folder', action='store', default='.', required=False,
     help='Control the location of the file output')
 
   
@@ -119,7 +119,7 @@ def main():
           readings, key=lambda reading: getattr(reading, args.sort_by))
 
       if args.to_file:
-        outputfilename=args.output_folder + '{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
+        outputfilename=args.output_folder + '/{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
         outputfile = open(outputfilename,"w")
         outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
         for reading in readings:
