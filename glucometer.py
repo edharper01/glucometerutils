@@ -61,7 +61,11 @@ def main():
   parser_dump.add_argument(
     '--to-file', action='store_true', default=False,
     help='Output results to a file yyyymmddhhmmss.csv')
+  parser_dump.add_argument(
+    '--output-folder', action='store', default='', required=False,
+    help='Control the location of the file output')
 
+  
   parser_date = subparsers.add_parser(
     'datetime', help='Reads or sets the date and time of the glucometer.')
   parser_date.add_argument(
@@ -100,7 +104,7 @@ def main():
       print("{device_info}Time: {time}".format(
         device_info=str(device_info), time=time_str))
     elif args.action == 'dump':
-      unit = args.unit
+      unit = common.UNIT_MMOLL #args.unit
       if unit is None:
         unit = device_info.native_unit
 
@@ -115,7 +119,7 @@ def main():
           readings, key=lambda reading: getattr(reading, args.sort_by))
 
       if args.to_file:
-        outputfilename='./{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
+        outputfilename=args.output_folder + '{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
         outputfile = open(outputfilename,"w")
         outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
         for reading in readings:
