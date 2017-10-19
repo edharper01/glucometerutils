@@ -122,9 +122,17 @@ def main():
       if args.to_file:
         outputfilename=args.output_folder + '/{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
         outputfile = open(outputfilename,"w")
-        outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
+        #outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
+        outputfile.write("Some guy\n# 000000001\n")
+        outputfile.write("ID	Time	Record Type	Historic Glucose (mmol/L)	Scan Glucose (mmol/L)	Non-numeric Rapid-Acting Insulin	")
+        outputfile.write("Rapid-Acting Insulin (units)	Non-numeric Food	Carbohydrates (grams)	Non-numeric Long-Acting Insulin	")
+        outputfile.write("Long-Acting Insulin (units)	Notes	Strip Glucose (mmol/L)	Ketone (mmol/L)	Meal Insulin (units)	")
+        outputfile.write("Correction Insulin (units)	User Change Insulin (units)	Previous Time	Updated Time\n")
+      
+        rowid = 1
         for reading in readings:
-          outputfile.write(reading.as_csv(unit))
+          outputfile.write(str(rowid) + "\t")
+          outputfile.write(reading.as_tsv(unit))
           outputfile.write("\n")
         outputfile.close()
         os.chmod(outputfilename, 0o777)

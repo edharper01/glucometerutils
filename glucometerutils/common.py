@@ -96,6 +96,20 @@ class GlucoseReading(_ReadingBase):
       self.timestamp, self.get_value_as(unit), self.meal, self.measure_method,
       self.comment, round(self.get_value_as(unit),1))
 
+  def as_tsv(self, unit):
+    """Returns the reading as a tab-separated value string. Final output has 19
+       columns - first is ID
+        Time	Record Type	Historic Glucose (mmol/L)	Scan Glucose (mmol/L)	Non-numeric Rapid-Acting Insulin	
+        Rapid-Acting Insulin (units)	Non-numeric Food	Carbohydrates (grams)	Non-numeric Long-Acting Insulin	
+        Long-Acting Insulin (units)	Notes	Strip Glucose (mmol/L)	Ketone (mmol/L)	Meal Insulin (units)	
+        Correction Insulin (units)	User Change Insulin (units)	Previous Time	Updated Time\n
+    """
+    return '%s\t1\t%.1f\t%.1f\t\t\t\t\t\t\t\t\t' % (
+      self.timestamp,round(self.get_value_as(unit),1)),round(self.get_value_as(unit),1)))
+      
+
+
+
 class KetoneReading(_ReadingBase):
   def __new__(cls, timestamp, value, comment='', **kwargs):
     """Constructor for the ketone reading object.
