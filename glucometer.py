@@ -13,6 +13,7 @@ import inspect
 import logging
 import sys
 import datetime
+import os
 
 from glucometerutils import common
 from glucometerutils import exceptions
@@ -126,6 +127,7 @@ def main():
           outputfile.write(reading.as_csv(unit))
           outputfile.write("\n")
         outputfile.close()
+        os.chmod(outputfilename, 0o777)
       else:
         for reading in readings:
           print(reading.as_csv(unit))
