@@ -99,16 +99,51 @@ class GlucoseReading(_ReadingBase):
   def as_tsv(self, unit):
     """Returns the reading as a tab-separated value string. Final output has 19
        columns - first is ID
-        Time	Record Type	Historic Glucose (mmol/L)	Scan Glucose (mmol/L)	Non-numeric Rapid-Acting Insulin	
-        Rapid-Acting Insulin (units)	Non-numeric Food	Carbohydrates (grams)	Non-numeric Long-Acting Insulin	
-        Long-Acting Insulin (units)	Notes	Strip Glucose (mmol/L)	Ketone (mmol/L)	Meal Insulin (units)	
-        Correction Insulin (units)	User Change Insulin (units)	Previous Time	Updated Time\n
+        #1-Time	#2-Record Type	#3-Historic Glucose (mmol/L)-TYPE 0	#4-Scan Glucose (mmol/L)-TYPE 1	#5-Non-numeric Rapid-Acting Insulin	
+        #6-Rapid-Acting Insulin (units)	#7-Non-numeric #8-Food	#9-Carbohydrates (grams)	#10-Non-numeric Long-Acting Insulin	
+        #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)	#15-Meal Insulin (units)	
+        #16-Correction Insulin (units)	#17-User Change Insulin (units)	#18-Previous Time	Updated Time\n
     """
-    return '%s\t1\t%.1f\t%.1f\t\t\t\t\t\t\t\t\t' % (
-      self.timestamp,round(self.get_value_as(unit),1)),round(self.get_value_as(unit),1)))
+    return "%s\t%s\t%s\t%s\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t\t" % (
+      self.timestamp,
+      self._get_libre_type(),
+      self._get_libre_historic_glucose(unit),
+      self._get_libre_scan_glucose(unit),
+      self._get_libre_strip_glucose(unit) )
       
+  def _get_libre_type(self):
+    """Returns the Libre file type code"""
+    val = "-1"
+    if self.comment == 'CGM':
+      if self.measure_method == '(Sensor)':
+        val = "0"
+      elif self.measure_method == '(Scan)':
+        val = "1"
+    elif self.comment == 'blood sample':
+      if self.measure_method == '(Blood)':
+        val = "2"
+    return val
 
+  def _get_libre_historic_glucose(self, unit):
+    """returns Libre historic glucose - where Libre type = 0"""
+    if self._get_libre_type() == "0":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
 
+  def _get_libre_scan_glucose(self, unit):
+    """returns Libre scan glucose - where Libre type = 1"""
+    if self._get_libre_type() == "1":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
+
+  def _get_libre_strip_glucose(self, unit):
+    """returns Libre strip glucose - where Libre type = 2"""
+    if self._get_libre_type() == "2":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
 
 class KetoneReading(_ReadingBase):
   def __new__(cls, timestamp, value, comment='', **kwargs):
