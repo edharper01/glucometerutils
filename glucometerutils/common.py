@@ -104,12 +104,14 @@ class GlucoseReading(_ReadingBase):
         #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)	#15-Meal Insulin (units)	
         #16-Correction Insulin (units)	#17-User Change Insulin (units)	#18-Previous Time	Updated Time\n
     """
-    return "%s\t%s\t%s\t%s\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t\t" % (
-      self.timestamp,
+    return "%s\t%s\t%s\t%s\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t\t%s:%s" % (
+      '{:%Y/%m/%d %H:%M}'.format(self.timestamp),
       self._get_libre_type(),
       self._get_libre_historic_glucose(unit),
       self._get_libre_scan_glucose(unit),
-      self._get_libre_strip_glucose(unit) )
+      self._get_libre_strip_glucose(unit),
+      self.comment,
+      self.measure_method )
       
   def _get_libre_type(self):
     """Returns the Libre file type code"""
