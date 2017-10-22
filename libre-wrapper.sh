@@ -5,7 +5,7 @@ hidval=0
 while [ $resultcode -ne  0 ] && [ $hidval -lt 5 ]
 do
     echo trying /dev/hidraw$hidval...
-    python3 glucometer.py --driver=fslibre --device=/dev/hidraw$hidval dump
+    python3 glucometer.py --driver=fslibre --device=/dev/hidraw$hidval dump --to-file --with-ketone --output-folder Libre
     resultcode=$?
     if (( hidval==0 ))
     then
