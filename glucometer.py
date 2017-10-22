@@ -120,9 +120,12 @@ def main():
           readings, key=lambda reading: getattr(reading, args.sort_by))
 
       if args.to_file:
+        #filter out dates in the future
+        readings = (reading for reading in readings
+                    if not reading.timestamp > datetime.datetime.now())
+                    
         outputfilename=args.output_folder + '/{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
         outputfile = open(outputfilename,"w")
-        #outputfile.write('"timestamp","value","meal","comment","measure_method","rounded_value"\n')
         outputfile.write("Some guy\r\n# 000000001\r\n")
         outputfile.write("ID	Time	Record Type	Historic Glucose (mmol/L)	Scan Glucose (mmol/L)	Non-numeric Rapid-Acting Insulin	")
         outputfile.write("Rapid-Acting Insulin (units)	Non-numeric Food	Carbohydrates (grams)	Non-numeric Long-Acting Insulin	")

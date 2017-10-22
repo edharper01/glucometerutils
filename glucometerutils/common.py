@@ -92,13 +92,12 @@ class GlucoseReading(_ReadingBase):
 
   def as_csv(self, unit):
     """Returns the reading as a formatted comma-separated value string."""
-    return '"%s","%.2f","%s","%s","%s","%.2f"' % (
+    return '"%s","%.2f","%s","%s","%s"' % (
       self.timestamp, self.get_value_as(unit), self.meal, self.measure_method,
-      self.comment, round(self.get_value_as(unit),1))
+      self.comment)
 
   def as_tsv(self, unit):
-    """Returns the reading as a tab-separated value string. Final output has 19
-       columns - first is ID
+    """Returns the reading as a tab-separated value string.
         #1-Time	#2-Record Type	#3-Historic Glucose (mmol/L)-TYPE 0	#4-Scan Glucose (mmol/L)-TYPE 1	#5-Non-numeric Rapid-Acting Insulin	
         #6-Rapid-Acting Insulin (units)	#7-Non-numeric #8-Food	#9-Carbohydrates (grams)	#10-Non-numeric Long-Acting Insulin	
         #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)	#15-Meal Insulin (units)	
@@ -115,12 +114,12 @@ class GlucoseReading(_ReadingBase):
     """Returns the Libre file type code"""
     val = "-1"
     if self.measure_method == 'CGM':
-      if self.comment == '(Sensor)':
+      if self.comment.startswith ('(Sensor)'):
         val = "0"
-      elif self.comment == '(Scan)':
+      elif self.comment.startswith ('(Scan)'):
         val = "1"
     elif self.measure_method == 'blood sample':
-      if self.comment == '(Blood)':
+      if self.comment.startswith ('(Blood)'):
         val = "2"
     return val
 
@@ -172,6 +171,17 @@ class KetoneReading(_ReadingBase):
       self.timestamp, self.get_value_as(unit), self.measure_method,
       self.comment)
 
+  def as_tsv(self, unit):
+    """Returns the reading as a tab-separated value string.
+        #1-Time	#2-Record Type	#3-Historic Glucose (mmol/L)-TYPE 0	#4-Scan Glucose (mmol/L)-TYPE 1	#5-Non-numeric Rapid-Acting Insulin	
+        #6-Rapid-Acting Insulin (units)	#7-Non-numeric #8-Food	#9-Carbohydrates (grams)	#10-Non-numeric Long-Acting Insulin	
+        #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)-TYPE 3	#15-Meal Insulin (units)	
+        #16-Correction Insulin (units)	#17-User Change Insulin (units)	#18-Previous Time	Updated Time\n
+    """
+    return "%s\t%s\t\t\t\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t" % (
+      '{:%Y/%m/%d %H:%M}'.format(self.timestamp),
+      "3",
+      self.get_value_as(unit))
 
 _MeterInfoBase = collections.namedtuple(
   '_MeterInfoBase', ['model', 'serial_number', 'version_info', 'native_unit'])
