@@ -48,6 +48,15 @@ _ARRESULT_TYPE2_ENTRY_MAP = (
     (9, 'reading-type'),  # 0 = glucose blood strip,
                           # 1 = ketone blood strip,
                           # 2 = glucose sensor
+
+                          ##EH - TODO not sure this list is correct. Based on the output of the Windows application, the list might be
+                          # 0 = historic blood
+                          # 1 = scan
+                          # 2 = glucose blood strip
+                          # 3 = keytone (strip?)
+                          # 5 = carbohydrate
+                          # 6 = date/time change
+                          ##
     (12, 'value'),
     (15, 'sport-flag'),
     (16, 'medication-flag'),
@@ -210,6 +219,7 @@ class Device(freestyle.FreeStyleHidDevice):
         # TODO(Flameeyes): figure out how to identify the actual unit on the
         # device.
         return common.Unit.MG_DL
+        return common.UNIT_MMOLL
 
     def get_readings(self):
 

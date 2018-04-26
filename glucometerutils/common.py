@@ -90,6 +90,54 @@ class GlucoseReading(_ReadingBase):
       self.timestamp, self.get_value_as(unit), self.meal.value,
       self.measure_method.value, self.comment)
 
+  def as_tsv(self, unit):
+    """Returns the reading as a tab-separated value string.
+        #1-Time	#2-Record Type	#3-Historic Glucose (mmol/L)-TYPE 0	#4-Scan Glucose (mmol/L)-TYPE 1	#5-Non-numeric Rapid-Acting Insulin	
+        #6-Rapid-Acting Insulin (units)	#7-Non-numeric #8-Food	#9-Carbohydrates (grams)	#10-Non-numeric Long-Acting Insulin	
+        #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)	#15-Meal Insulin (units)	
+        #16-Correction Insulin (units)	#17-User Change Insulin (units)	#18-Previous Time	Updated Time\n
+    """
+    return "%s\t%s\t%s\t%s\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t\t" % (
+      '{:%Y/%m/%d %H:%M}'.format(self.timestamp),
+      self._get_libre_type(),
+      self._get_libre_historic_glucose(unit),
+      self._get_libre_scan_glucose(unit),
+      self._get_libre_strip_glucose(unit) )
+      
+  def _get_libre_type(self):
+    """Returns the Libre file type code"""
+    val = "-1"
+    if self.measure_method == 'CGM':
+      if self.comment.startswith ('(Sensor)'):
+        val = "0"
+      elif self.comment.startswith ('(Scan)'):
+        val = "1"
+    elif self.measure_method == 'blood sample':
+      if self.comment.startswith ('(Blood)'):
+        val = "2"
+    return val
+
+  def _get_libre_historic_glucose(self, unit):
+    """returns Libre historic glucose - where Libre type = 0"""
+    if self._get_libre_type() == "0":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
+
+  def _get_libre_scan_glucose(self, unit):
+    """returns Libre scan glucose - where Libre type = 1"""
+    if self._get_libre_type() == "1":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
+
+  def _get_libre_strip_glucose(self, unit):
+    """returns Libre strip glucose - where Libre type = 2"""
+    if self._get_libre_type() == "2":
+      return str(round(self.get_value_as(unit),1))
+    else:
+      return ""
+
 class KetoneReading(_ReadingBase):
   def __new__(cls, timestamp, value, comment='', **kwargs):
     """Constructor for the ketone reading object.
@@ -117,6 +165,17 @@ class KetoneReading(_ReadingBase):
       self.timestamp, self.get_value_as(unit), self.measure_method.value,
       self.comment)
 
+  def as_tsv(self, unit):
+    """Returns the reading as a tab-separated value string.
+        #1-Time	#2-Record Type	#3-Historic Glucose (mmol/L)-TYPE 0	#4-Scan Glucose (mmol/L)-TYPE 1	#5-Non-numeric Rapid-Acting Insulin	
+        #6-Rapid-Acting Insulin (units)	#7-Non-numeric #8-Food	#9-Carbohydrates (grams)	#10-Non-numeric Long-Acting Insulin	
+        #11-Long-Acting Insulin (units)	#12-Notes	#13-Strip Glucose (mmol/L)-TYPE 2	#14-Ketone (mmol/L)-TYPE 3	#15-Meal Insulin (units)	
+        #16-Correction Insulin (units)	#17-User Change Insulin (units)	#18-Previous Time	Updated Time\n
+    """
+    return "%s\t%s\t\t\t\t\t\t\t\t\t\t\t%s\t\t\t\t\t\t" % (
+      '{:%Y/%m/%d %H:%M}'.format(self.timestamp),
+      "3",
+      self.get_value_as(unit))
 
 _MeterInfoBase = collections.namedtuple(
   '_MeterInfoBase', ['model', 'serial_number', 'version_info', 'native_unit'])

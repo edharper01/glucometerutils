@@ -12,6 +12,8 @@ import importlib
 import inspect
 import logging
 import sys
+import datetime
+import os
 
 from glucometerutils import common
 from glucometerutils import exceptions
@@ -58,6 +60,13 @@ def main():
   parser_dump.add_argument(
     '--with-ketone', action='store_true', default=False,
     help='Enable ketone reading if available on the glucometer.')
+  parser_dump.add_argument(
+    '--to-file', action='store_true', default=False,
+    help='Output results to a file yyyymmddhhmmss.csv')
+  parser_dump.add_argument(
+    '--output-folder', action='store', default='.', required=False,
+    help='Control the location of the file output')
+
 
   parser_date = subparsers.add_parser(
     'datetime', help='Reads or sets the date and time of the glucometer.')
@@ -97,7 +106,7 @@ def main():
       print("{device_info}Time: {time}".format(
         device_info=str(device_info), time=time_str))
     elif args.action == 'dump':
-      unit = args.unit
+      unit = common.UNIT_MMOLL #args.unit
       if unit is None:
         unit = device_info.native_unit
 
@@ -111,8 +120,30 @@ def main():
         readings = sorted(
           readings, key=lambda reading: getattr(reading, args.sort_by))
 
-      for reading in readings:
-        print(reading.as_csv(unit))
+      if args.to_file:
+        #filter out dates in the future
+        readings = (reading for reading in readings
+                    if not reading.timestamp > datetime.datetime.now())
+                    
+        outputfilename=args.output_folder + '/{:%Y%m%d%H%M%S}.csv'.format(datetime.datetime.now())
+        outputfile = open(outputfilename,"w")
+        outputfile.write("Some guy\r\n# 000000001\r\n")
+        outputfile.write("ID	Time	Record Type	Historic Glucose (mmol/L)	Scan Glucose (mmol/L)	Non-numeric Rapid-Acting Insulin	")
+        outputfile.write("Rapid-Acting Insulin (units)	Non-numeric Food	Carbohydrates (grams)	Non-numeric Long-Acting Insulin	")
+        outputfile.write("Long-Acting Insulin (units)	Notes	Strip Glucose (mmol/L)	Ketone (mmol/L)	Meal Insulin (units)	")
+        outputfile.write("Correction Insulin (units)	User Change Insulin (units)	Previous Time	Updated Time\r\n")
+      
+        rowid = 1
+        for reading in readings:
+          outputfile.write(str(rowid) + "\t")
+          outputfile.write(reading.as_tsv(unit))
+          outputfile.write("\r\n")
+          rowid += 1
+        outputfile.close()
+        os.chmod(outputfilename, 0o777)
+      else:
+        for reading in readings:
+          print(reading.as_csv(unit))
     elif args.action == 'datetime':
       if args.set == 'now':
         print(device.set_datetime())
