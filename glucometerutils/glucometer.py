@@ -106,7 +106,7 @@ def main():
       print("{device_info}Time: {time}".format(
         device_info=str(device_info), time=time_str))
     elif args.action == 'dump':
-      unit = common.UNIT_MMOLL #args.unit
+      unit = common.Unit.MMOL_L #args.unit
       if unit is None:
         unit = device_info.native_unit
 
