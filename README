@@ -11,7 +11,7 @@ well.
 If you have knowledge of a protocol of a glucometer you would have
 supported, please provide a reference, possibly by writing a
 specification and contribute it to
-https://github.com/Flameeyes/glucometer-protocols/.
+https://github.com/Flameeyes/glucometer-protocols/. 
 
 ## Supported devices
 
@@ -94,5 +94,5 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0NDI4NjU0OTddfQ==
+eyJoaXN0b3J5IjpbMTkxMTAzOTYwMywtMTQ0Mjg2NTQ5N119
 -->
